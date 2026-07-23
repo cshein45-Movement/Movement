@@ -1,276 +1,245 @@
-# Create a JavaScript Action
-
-[![GitHub Super-Linter](https://github.com/actions/javascript-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
-![CI](https://github.com/actions/javascript-action/actions/workflows/ci.yml/badge.svg)
-
-Use this template to bootstrap the creation of a JavaScript action. :rocket:
-
-This template includes compilation support, tests, a validation workflow,
-publishing, and versioning guidance.
-
-If you are new, there's also a simpler introduction in the
-[Hello world JavaScript action repository](https://github.com/actions/hello-world-javascript-action).
-
-## Create Your Own Action
-
-To create your own action, you can use this repository as a template! Just
-follow the below instructions:
-
-1. Click the **Use this template** button at the top of the repository
-1. Select **Create a new repository**
-1. Select an owner and name for your new repository
-1. Click **Create repository**
-1. Clone your new repository
-
-> [!IMPORTANT]
->
-> Make sure to remove or update the [`CODEOWNERS`](./CODEOWNERS) file! For
-> details on how to use this file, see
-> [About code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners).
-
-## Initial Setup
-
-After you've cloned the repository to your local machine or codespace, you'll
-need to perform some initial setup steps before you can develop your action.
-
-> [!NOTE]
->
-> You'll need to have a reasonably modern version of
-> [Node.js](https://nodejs.org) handy. If you are using a version manager like
-> [`nodenv`](https://github.com/nodenv/nodenv) or
-> [`nvm`](https://github.com/nvm-sh/nvm), you can run `nodenv install` in the
-> root of your repository to install the version specified in
-> [`package.json`](./package.json). Otherwise, 20.x or later should work!
-
-1. :hammer_and_wrench: Install the dependencies
-
-   ```bash
-   npm install
-   ```
-
-1. :building_construction: Package the JavaScript for distribution
-
-   ```bash
-   npm run bundle
-   ```
-
-1. :white_check_mark: Run the tests
-
-   ```bash
-   $ npm test
-
-   PASS  ./index.test.js
-     ✓ throws invalid number (3ms)
-     ✓ wait 500 ms (504ms)
-     ✓ test runs (95ms)
-
-   ...
-   ```
-
-## Update the Action Metadata
-
-The [`action.yml`](action.yml) file defines metadata about your action, such as
-input(s) and output(s). For details about this file, see
-[Metadata syntax for GitHub Actions](https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions).
-
-When you copy this repository, update `action.yml` with the name, description,
-inputs, and outputs for your action.
-
-## Update the Action Code
-
-The [`src/`](./src/) directory is the heart of your action! This contains the
-source code that will be run when your action is invoked. You can replace the
-contents of this directory with your own code.
-
-There are a few things to keep in mind when writing your action code:
-
-- Most GitHub Actions toolkit and CI/CD operations are processed asynchronously.
-  In `main.js`, you will see that the action is run in an `async` function.
-
-  ```javascript
-  const core = require('@actions/core')
-  //...
-
-  async function run() {
-    try {
-      //...
-    } catch (error) {
-      core.setFailed(error.message)
-    }
-  }
-  ```
-
-  For more information about the GitHub Actions toolkit, see the
-  [documentation](https://github.com/actions/toolkit/blob/main/README.md).
-
-So, what are you waiting for? Go ahead and start customizing your action!
-
-1. Create a new branch
-
-   ```bash
-   git checkout -b releases/v1
-   ```
-
-1. Replace the contents of `src/` with your action code
-1. Add tests to `__tests__/` for your source code
-1. Format, test, and build the action
-
-   ```bash
-   npm run all
-   ```
-
-   > This step is important! It will run [`ncc`](https://github.com/vercel/ncc)
-   > to build the final JavaScript action code with all dependencies included.
-   > If you do not run this step, your action will not work correctly when it is
-   > used in a workflow. This step also includes the `--license` option for
-   > `ncc`, which will create a license file for all of the production node
-   > modules used in your project.
-
-1. (Optional) Test your action locally
-
-   The [`@github/local-action`](https://github.com/github/local-action) utility
-   can be used to test your action locally. It is a simple command-line tool
-   that "stubs" (or simulates) the GitHub Actions Toolkit. This way, you can run
-   your JavaScript action locally without having to commit and push your changes
-   to a repository.
-
-   The `local-action` utility can be run in the following ways:
-
-   - Visual Studio Code Debugger
-
-     Make sure to review and, if needed, update
-     [`.vscode/launch.json`](./.vscode/launch.json)
-
-   - Terminal/Command Prompt
-
-     ```bash
-     # npx @github/local action <action-yaml-path> <entrypoint> <dotenv-file>
-     npx @github/local-action . src/main.js .env
-     ```
-
-   You can provide a `.env` file to the `local-action` CLI to set environment
-   variables used by the GitHub Actions Toolkit. For example, setting inputs and
-   event payload data used by your action. For more information, see the example
-   file, [`.env.example`](./.env.example), and the
-   [GitHub Actions Documentation](https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables).
-
-1. Commit your changes
-
-   ```bash
-   git add .
-   git commit -m "My first action is ready!"
-   ```
-
-1. Push them to your repository
-
-   ```bash
-   git push -u origin releases/v1
-   ```
-
-1. Create a pull request and get feedback on your action
-1. Merge the pull request into the `main` branch
-
-Your action is now published! :rocket:
-
-For information about versioning your action, see
-[Versioning](https://github.com/actions/toolkit/blob/main/docs/action-versioning.md)
-in the GitHub Actions toolkit.
-
-## Validate the Action
-
-You can now validate the action by referencing it in a workflow file. For
-example, [`ci.yml`](./.github/workflows/ci.yml) demonstrates how to reference an
-action in the same repository.
-
-```yaml
-steps:
-  - name: Checkout
-    id: checkout
-    uses: actions/checkout@v3
-
-  - name: Test Local Action
-    id: test-action
-    uses: ./
-    with:
-      milliseconds: 1000
-
-  - name: Print Output
-    id: output
-    run: echo "${{ steps.test-action.outputs.time }}"
-```
-
-For example workflow runs, check out the
-[Actions tab](https://github.com/actions/javascript-action/actions)! :rocket:
-
-## Usage
-
-After testing, you can create version tag(s) that developers can use to
-reference different stable versions of your action. For more information, see
-[Versioning](https://github.com/actions/toolkit/blob/main/docs/action-versioning.md)
-in the GitHub Actions toolkit.
-
-To include the action in a workflow in another repository, you can use the
-`uses` syntax with the `@` symbol to reference a specific branch, tag, or commit
-hash.
-
-```yaml
-steps:
-  - name: Checkout
-    id: checkout
-    uses: actions/checkout@v4
-
-  - name: Run my Action
-    id: run-action
-    uses: actions/javascript-action@v1 # Commit with the `v1` tag
-    with:
-      milliseconds: 1000
-
-  - name: Print Output
-    id: output
-    run: echo "${{ steps.run-action.outputs.time }}"
-```
-
-## Dependency License Management
-
-This template includes a GitHub Actions workflow,
-[`licensed.yml`](./.github/workflows/licensed.yml), that uses
-[Licensed](https://github.com/licensee/licensed) to check for dependencies with
-missing or non-compliant licenses. This workflow is initially disabled. To
-enable the workflow, follow the below steps.
-
-1. Open [`licensed.yml`](./.github/workflows/licensed.yml)
-1. Uncomment the following lines:
-
-   ```yaml
-   # pull_request:
-   #   branches:
-   #     - main
-   # push:
-   #   branches:
-   #     - main
-   ```
-
-1. Save and commit the changes
-
-Once complete, this workflow will run any time a pull request is created or
-changes pushed directly to `main`. If the workflow detects any dependencies with
-missing or non-compliant licenses, it will fail the workflow and provide details
-on the issue(s) found.
-
-### Updating Licenses
-
-Whenever you install or update dependencies, you can use the Licensed CLI to
-update the licenses database. To install Licensed, see the project's
-[Readme](https://github.com/licensee/licensed?tab=readme-ov-file#installation).
-
-To update the cached licenses, run the following command:
-
-```bash
-licensed cache
-```
-
-To check the status of cached licenses, run the following command:
-
-```bash
-licensed status
-```
+# Movement Core
+Modular blockchain infrastructure powered by Move.
+Movement Core is an open-source infrastructure framework designed to support the evolution of a modular blockchain ecosystem through Move Language, resource-oriented programming, decentralized applications, governance systems, liquidity infrastructure, and digital ownership models.
+The goal is to provide developers, protocols, and businesses with the foundation to build scalable, secure, and composable decentralized systems.
+---
+## Vision
+Movement Core represents the infrastructure layer behind a living blockchain ecosystem.
+The architecture connects:
+- Language Layer → Move Language
+- Infrastructure Layer → Blockchain Settlement
+- Application Layer → DeFi, Protocols, DApps
+- Governance Layer → DAO Coordination
+- Ownership Layer → Digital Assets and Tokenized Infrastructure
+- Intelligence Layer → AI-driven automation and self-improving systems
+---
+# Architecture
+
+Language Layer
+|
+↓
+Move Language
+|
+↓
+MoveVM
+|
+↓
+Blockchain Infrastructure
+|
+↓
+Movement Network
+|
+↓
+Application Layer
+|
+↓
+DeFi / Protocols / DApps
+|
+↓
+DAO Governance
+|
+↓
+AI + Automated Coordination
+
+---
+# Modular Infrastructure Model
+Movement Core follows a modular expansion model:
+
+1 → 3 → 9 → 27 → 81 → 27 → 9 → 3 → 1
+
+The system decomposes complex infrastructure into independent modules that can be developed, improved, and expanded by global builders.
+Each module creates:
+- Independent ownership
+- Developer contribution paths
+- Long-term value flow
+- Ecosystem expansion opportunities
+The network grows through composability rather than centralized control.
+---
+# Core Technology
+## Move Language
+Movement Core is built around Move's resource-oriented programming model.
+Key principles:
+- Digital assets as resources
+- Secure ownership semantics
+- Verifiable execution
+- Strong asset safety guarantees
+- Programmable financial infrastructure
+---
+# Blockchain Architecture
+## Infrastructure Layer
+Movement Core supports:
+- Blockchain execution
+- Settlement infrastructure
+- Developer tooling
+- Network infrastructure
+- Explorer and ecosystem services
+Architecture evolution:
+
+Ethereum L2 / ERC20
+↓
+MoveVM + ZK Rollup Concept
+↓
+HyperLiquidity L0
+↓
+OFT Cross-chain Infrastructure
+↓
+HyperEVM L1
+↓
+Solidity → Move Compatibility
+↓
+Movement M1 Mainnet
+↓
+Movement M2.0 Application Ecosystem
+
+---
+# Asset & Ownership Layer
+Movement Core supports programmable ownership systems:
+## Fungible Assets
+Examples:
+- ERC20 compatible assets
+- Native tokens
+- Stablecoins
+## Digital Assets
+Examples:
+- ERC721 NFTs
+- ERC1155 Multi-assets
+## Real World Assets
+Examples:
+- Tokenized ownership
+- Smart contract based assets
+- RWA infrastructure
+---
+# Liquidity Layer
+Liquidity acts as the economic flow layer of the ecosystem.
+
+Token
+↓
+Liquidity
+↓
+DEX
+↓
+DeFi Protocol
+↓
+Market Flow
+↓
+Value Creation
+
+Supported concepts:
+- AMM infrastructure
+- DEX architecture
+- Liquidity pools
+- Token economy
+- Stablecoin settlement
+---
+# Stablecoin Infrastructure
+Movement ecosystem enables financial infrastructure through native settlement assets.
+Examples:
+- USDCx — native USDC-backed stablecoin infrastructure
+- USDT0 integration
+- Cross-chain liquidity systems
+Goal:
+Building global settlement infrastructure for digital payments, financial applications, and decentralized markets.
+---
+# DAO Governance Architecture
+Governance follows a transparent lifecycle:
+
+Seed
+↓
+Proposal
+↓
+Vote
+↓
+Treasury
+↓
+Timelock
+↓
+Execution
+↓
+Reward
+
+The system creates a pathway from:
+Idea → Community Decision → Funding → Implementation → Builder Reward
+---
+# Developer Ecosystem
+Movement Core supports:
+- Open-source development
+- SDK integration
+- Developer tools
+- Hackathon participation
+- Protocol innovation
+- Ecosystem growth
+Builders can contribute through:
+- Infrastructure
+- Applications
+- DeFi protocols
+- Governance systems
+- Community initiatives
+---
+# Cross-chain Architecture
+Movement Core connects blockchain networks through:
+- Bridge infrastructure
+- Cross-chain messaging
+- Token standards
+- Burn & mint mechanisms
+- Interoperability protocols
+---
+# AI Governance Architecture
+Future-oriented architecture:
+
+Human Intent
+↓
+Philosophy Layer
+↓
+Ethics & Standards
+↓
+Reasoning Engine
+↓
+AI Agent
+↓
+Execution Layer
+↓
+Blockchain / DAO
+↓
+Memory + Feedback
+↓
+Self Correction
+
+AI systems should combine:
+- Logic
+- Ethics
+- Memory
+- Transparency
+- Verification
+---
+# Philosophy
+Movement Core follows a natural system model:
+Earth → Foundation  
+Water → Liquidity  
+Air → Decentralization  
+A living ecosystem requires:
+- Strong foundations
+- Continuous value flow
+- Open participation
+- Sustainable growth
+---
+# Open Source
+This project is developed as an open-source infrastructure initiative.
+Repository:
+https://github.com/cshein45-Movement
+Releases:
+- movement-core
+- v1.0.0
+---
+# Contributing
+Developers, researchers, and ecosystem builders are welcome to contribute.
+Contribution areas:
+- Blockchain infrastructure
+- Move development
+- Smart contracts
+- DeFi protocols
+- Governance systems
+- Developer tooling
+---
+# License
+Open-source project.
+Built for the future of decentralized infrastructure.
